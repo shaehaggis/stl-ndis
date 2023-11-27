@@ -33,11 +33,6 @@ fun AppNavigator(
                 Column {
                     Text(text = "Hello World - Home")
                     Button(
-                        onClick = { navController.navigate("login") }
-                    ) {
-                        Text(text = "Navigate to login")
-                    }
-                    Button(
                         onClick = { navController.navigate("create-job") }
                     ) {
                         Text(text = "Navigate to create jobs")

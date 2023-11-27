@@ -8,7 +8,6 @@ import com.example.stl_ndis.data.models.LoginCredentials
 import com.example.stl_ndis.data.repositories.LoginRepository
 import com.example.stl_ndis.ui.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -44,11 +43,8 @@ class LoginViewModel @Inject constructor(
         _loadingState.value = LoginState.Loading
 
         viewModelScope.launch {
-
             try {
-
                 val response = loginRepository.authenticateWithSupabase(credentials)
-                delay(3000)
 
                 if (response) {
                     _loadingState.value = LoginState.Success

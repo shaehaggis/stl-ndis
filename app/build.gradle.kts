@@ -88,6 +88,12 @@ dependencies {
     // supabase
     implementation("io.github.jan-tennert.supabase:postgrest-kt:$supabase_version")
     implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.github.jan-tennert.supabase:gotrue-kt:$supabase_version")
+    implementation("com.russhwolf:multiplatform-settings:1.1.1")
+
+    // datastore
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    implementation("androidx.datastore:datastore-rxjava3:1.0.0")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
