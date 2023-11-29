@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.stl_ndis.data.models.LoginCredentials
+import com.example.stl_ndis.data.repositories.JobRepository
 import com.example.stl_ndis.data.repositories.LoginRepository
 import com.example.stl_ndis.ui.state.LoginState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val jobRepository: JobRepository
 ): ViewModel() {
 
     private var _username = mutableStateOf("")
@@ -48,6 +50,7 @@ class LoginViewModel @Inject constructor(
 
                 if (response) {
                     _loadingState.value = LoginState.Success
+                    jobRepository.initialiseJobs()
                 }
                 else {
                     _loadingState.value = LoginState.Error("Error authenticating")

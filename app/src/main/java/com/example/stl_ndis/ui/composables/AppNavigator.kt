@@ -1,11 +1,10 @@
 package com.example.stl_ndis.ui.composables
 
-import androidx.compose.foundation.layout.Column
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -15,16 +14,22 @@ import androidx.navigation.compose.composable
 import com.example.stl_ndis.ui.viewmodels.HomeViewModel
 import com.example.stl_ndis.ui.viewmodels.JobCreationViewModel
 import com.example.stl_ndis.ui.viewmodels.LoginViewModel
+import com.example.stl_ndis.ui.viewmodels.ViewJobsViewModel
+import io.github.jan.supabase.SupabaseClient
+import io.github.jan.supabase.gotrue.gotrue
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavigator(
     navController: NavHostController,
-    startDestination: String
+    startDestination: String,
+    supabaseClient: SupabaseClient
 ) {
 
     val loginViewModel: LoginViewModel = hiltViewModel()
     val homeViewModel: HomeViewModel = hiltViewModel()
     val jobCreationViewModel: JobCreationViewModel = hiltViewModel()
+    val viewJobsViewModel: ViewJobsViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -45,6 +50,12 @@ fun AppNavigator(
                         .verticalScroll(rememberScrollState()),
                     navigateToCreateJob = { navController.navigate("create-job") },
                     navigateToViewJobs = { navController.navigate("view-jobs") },
+                    navigateToLogin = {
+                        navController.navigate("login") {
+                            popUpTo("home") { inclusive = true }
+                        }
+                    },
+                    logout = { supabaseClient.gotrue.logout() },
                     homeViewModel = homeViewModel
                 )
             }
@@ -64,24 +75,11 @@ fun AppNavigator(
             }
 
             composable("view-jobs") {
-                Column {
-                    Text(text = "Hello World - view jobs")
-                    Button(
-                        onClick = { navController.navigate("home") }
-                    ) {
-                        Text(text = "Navigate to home")
-                    }
-                    Button(
-                        onClick = { navController.navigate("create-job") }
-                    ) {
-                        Text(text = "Navigate to create jobs")
-                    }
-                    Button(
-                        onClick = { navController.navigate("login") }
-                    ) {
-                        Text(text = "Navigate to login")
-                    }
-                }
+                ViewJobs(
+                    Modifier.fillMaxSize(),
+                    navigateToHome = {navController.navigate("home")},
+                    viewJobsViewModel = viewJobsViewModel
+                )
             }
         }
     )
