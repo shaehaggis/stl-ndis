@@ -1,5 +1,6 @@
 package com.example.stl_ndis.ui.composables
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +38,12 @@ fun Login(
     val username = loginViewModel.username.value
     val password = loginViewModel.password.value
     val loginState by loginViewModel.loadingState.collectAsState()
+    val showToast = loginViewModel.showToast.collectAsState()
+
+    if (showToast.value){
+        Toast.makeText(LocalContext.current, "Logout Successful", Toast.LENGTH_SHORT).show()
+        loginViewModel.hideToast()
+    }
 
     Column(
         modifier = modifier,

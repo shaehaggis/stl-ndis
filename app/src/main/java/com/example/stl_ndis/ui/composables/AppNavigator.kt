@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.stl_ndis.ui.state.LoginState
 import com.example.stl_ndis.ui.viewmodels.HomeViewModel
 import com.example.stl_ndis.ui.viewmodels.JobCreationViewModel
 import com.example.stl_ndis.ui.viewmodels.LoginViewModel
@@ -50,9 +51,13 @@ fun AppNavigator(
                         .verticalScroll(rememberScrollState()),
                     navigateToCreateJob = { navController.navigate("create-job") },
                     navigateToViewJobs = { navController.navigate("view-jobs") },
-                    navigateToLogin = {
+                    navigateToLogin = { showToast ->
+                        if (showToast){
+                            loginViewModel.showToast()
+                        }
+                        loginViewModel.loadingState.value = LoginState.Idle
                         navController.navigate("login") {
-                            popUpTo("home") { inclusive = true }
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     },
                     logout = { supabaseClient.gotrue.logout() },
@@ -76,7 +81,6 @@ fun AppNavigator(
 
             composable("view-jobs") {
                 ViewJobs(
-                    Modifier.fillMaxSize(),
                     navigateToHome = {navController.navigate("home")},
                     viewJobsViewModel = viewJobsViewModel
                 )

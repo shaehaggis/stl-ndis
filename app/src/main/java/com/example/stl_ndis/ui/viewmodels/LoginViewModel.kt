@@ -19,6 +19,8 @@ class LoginViewModel @Inject constructor(
     private val jobRepository: JobRepository
 ): ViewModel() {
 
+    var showToast: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     private var _username = mutableStateOf("")
     private var _password = mutableStateOf("")
 
@@ -50,6 +52,8 @@ class LoginViewModel @Inject constructor(
 
                 if (response) {
                     _loadingState.value = LoginState.Success
+                    setUsername("")
+                    setPassword("")
                     jobRepository.initialiseJobs()
                 }
                 else {
@@ -60,5 +64,13 @@ class LoginViewModel @Inject constructor(
                 _loadingState.value = LoginState.Error(e.message ?: "Unknown Error")
             }
         }
+    }
+
+    fun showToast(){
+        showToast.value = true
+    }
+
+    fun hideToast(){
+        showToast.value = false
     }
 }

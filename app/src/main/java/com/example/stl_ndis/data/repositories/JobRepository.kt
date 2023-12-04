@@ -24,6 +24,8 @@ class JobRepository @Inject constructor(
     val jobsFlow: StateFlow<List<NDISJobDTO>?> = _jobsFlow.asStateFlow()
 
     suspend fun initialiseJobs() {
+        println("Running initialise jobs in job repository")
+
         repositoryScope.launch {
             updateJobsFlow()
         }

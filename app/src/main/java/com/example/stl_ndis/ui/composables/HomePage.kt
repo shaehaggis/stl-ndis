@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,7 +31,7 @@ fun HomePage(
     modifier: Modifier = Modifier,
     navigateToCreateJob: () -> Unit,
     navigateToViewJobs: () -> Unit,
-    navigateToLogin: () -> Unit,
+    navigateToLogin: (Boolean) -> Unit,
     logout: suspend () -> Unit,
     homeViewModel: HomeViewModel
 ) {
@@ -43,9 +44,11 @@ fun HomePage(
 
     if (performLogout) {
         LaunchedEffect(Unit){
+            homeViewModel.isLoggingOut.value = true
+//            homeViewModel.clearUserData()
             logout()
-            navigateToLogin()
-            homeViewModel.clearUserData()
+            navigateToLogin(true)
+            homeViewModel.isLoggingOut.value = false
             performLogout = false
         }
     }
@@ -62,29 +65,34 @@ fun HomePage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "Hello ${firstName.ifBlank { "World" }}",
-            fontSize = 32.sp
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Button(onClick = { navigateToCreateJob() }) {
-                Text(text = "Create Job")
-            }
-            Spacer(Modifier.width(16.dp))
-            Button(onClick = { navigateToViewJobs() }) {
-                Text(text = "View Jobs")
-            }
-            Spacer(Modifier.width(16.dp))
-            Button(
-                onClick = { performLogout = true },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        if (!homeViewModel.isLoggingOut.value) {
+            Text(
+                text = "Hello ${firstName.ifBlank { "World" }}",
+                fontSize = 32.sp
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Logout")
+                Button(onClick = { navigateToCreateJob() }) {
+                    Text(text = "Create Job")
+                }
+                Spacer(Modifier.width(16.dp))
+                Button(onClick = { navigateToViewJobs() }) {
+                    Text(text = "View Jobs")
+                }
+                Spacer(Modifier.width(16.dp))
+                Button(
+                    onClick = { performLogout = true },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(text = "Logout")
+                }
             }
+        }
+        else {
+            CircularProgressIndicator()
         }
     }
 }

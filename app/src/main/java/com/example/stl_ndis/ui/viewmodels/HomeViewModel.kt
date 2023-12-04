@@ -1,5 +1,6 @@
 package com.example.stl_ndis.ui.viewmodels
 
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.core.DataStore
@@ -20,6 +21,8 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
     var showToast: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
+    var isLoggingOut: MutableState<Boolean> = mutableStateOf(false)
+
     private val _firstName = mutableStateOf("")
     val firstName: State<String> = _firstName
 
@@ -37,13 +40,13 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun clearUserData(){
-        viewModelScope.launch {
-            dataStore.edit { preferences ->
-                preferences.clear()
-            }
-        }
-    }
+//    fun clearUserData(){
+//        viewModelScope.launch {
+//            dataStore.edit { preferences ->
+//                preferences.clear()
+//            }
+//        }
+//    }
 
     fun showToast(){
         showToast.value = true
