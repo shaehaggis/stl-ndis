@@ -79,49 +79,48 @@ fun CreateJob(
                 TimePickerComposable(viewModel = jobCreationViewModel)
 
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(text = "Select Approximate Hours")
-                Spacer(modifier = Modifier.height(12.dp))
-                TextField(
+
+                LabeledTextField(
+                    label = "Select Approximate Hours",
                     value = jobCreationViewModel.approxHours,
                     onValueChange = { jobCreationViewModel.approxHours = it },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     )
-
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(text = "Select Category of Service")
-                Spacer(modifier = Modifier.height(12.dp))
-                TextField(
+
+                LabeledTextField(
+                    label = "Select Category of Service",
                     value = jobCreationViewModel.categoryOfService,
                     onValueChange = { jobCreationViewModel.categoryOfService = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(text = "Pickup Location")
-                Spacer(modifier = Modifier.height(12.dp))
-                TextField(
+
+                LabeledTextField(
+                    label = "Pickup Location",
                     value = jobCreationViewModel.pickupLocation,
                     onValueChange = { jobCreationViewModel.pickupLocation = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(text = "Description of Job (Optional)")
-                Spacer(modifier = Modifier.height(12.dp))
-                TextField(
+
+                LabeledTextField(
+                    label = "Description of Job (Optional)",
                     value = jobCreationViewModel.jobDescription,
                     onValueChange = { jobCreationViewModel.jobDescription = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
-                Text(text = "Support Worker Assigned")
-                Spacer(modifier = Modifier.height(12.dp))
-                TextField(
+
+                LabeledTextField(
+                    label = "Support Worker Assigned",
                     value = jobCreationViewModel.supportWorkerAssigned,
                     onValueChange = { jobCreationViewModel.supportWorkerAssigned = it },
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
@@ -137,4 +136,16 @@ fun CreateJob(
     }
 
 
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LabeledTextField(label: String, value: String, onValueChange: (String) -> Unit, keyboardOptions: KeyboardOptions) {
+    Text(text = label)
+    Spacer(modifier = Modifier.height(12.dp))
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        keyboardOptions = keyboardOptions
+    )
 }

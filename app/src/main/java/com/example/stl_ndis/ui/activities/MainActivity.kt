@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.compose.rememberNavController
 import com.example.stl_ndis.data.repositories.JobRepository
@@ -28,23 +29,29 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
 
-            // initialise navController
             val navController = rememberNavController()
-
-            val startDestination = if (supabaseClient.gotrue.currentSessionOrNull() != null) {
-                LaunchedEffect(Unit) {
-                    jobRepository.initialiseJobs()
-                }
-                "home"
-            } else {
-                "login"
-            }
+            val startDestination = determineStartDestination(supabaseClient, jobRepository)
 
             AppNavigator(
                 navController = navController,
                 startDestination = startDestination,
                 supabaseClient = supabaseClient
             )
+        }
+    }
+
+    @Composable
+    private fun determineStartDestination(
+        supabaseClient: SupabaseClient,
+        jobRepository: JobRepository
+    ): String {
+        return if (supabaseClient.gotrue.currentSessionOrNull() != null) {
+            LaunchedEffect(Unit) {
+                jobRepository.initialiseJobs()
+            }
+            "home"
+        } else {
+            "login"
         }
     }
 }

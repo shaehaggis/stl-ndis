@@ -91,7 +91,7 @@ fun ViewJobs(
             ) {
                 Text(text = "Date", fontWeight = FontWeight.Bold)
                 Text(text = "Category", fontWeight = FontWeight.Bold)
-                Text(text = "Job Status", fontWeight = FontWeight.Bold)
+                Text(text = "More Info", fontWeight = FontWeight.Bold)
             }
 
             Divider(color = Color.Gray, thickness = 0.5.dp)
@@ -151,21 +151,40 @@ fun JobDetailsModal(job: NDISJob, onDismiss: () -> Unit) {
         } },
         title = { Text(text = "Job Details") },
         text = {
-            Column {
-                Text("Start Date: ${job.startDate}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Start Time: ${job.startTime}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Hours: ${job.hours}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Status: ${job.status}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Service Category: ${job.serviceCategory}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Description: ${job.description}")
-                Spacer(modifier = Modifier.height(12.dp))
-                Text("Pickup Location: ${job.pickupLocation}")
-            }
+            JobDetails(job = job)
         }
     )
+}
+
+@Composable
+fun JobDetails(
+    job: NDISJob
+) {
+    Column {
+        Column {
+            LabeledText("Start Date", job.startDate)
+            LabeledText("Start Time", job.startTime)
+            LabeledText("Hours", job.hours.toString())
+            LabeledText("Status", job.status)
+            LabeledText("Service Category", job.serviceCategory)
+            LabeledText("Description", job.description)
+            LabeledText("Pickup Location", job.pickupLocation)
+            Text("Assigned Support Workers:")
+            Spacer(modifier = Modifier.height(8.dp))
+            if (job.assignedSupportWorkers.isNullOrEmpty()) {
+                Text("       • There are currently no workers assigned to this job")
+            } else {
+                job.assignedSupportWorkers!!.forEach { supportWorker ->
+                    Text("   • ${supportWorker.firstName} ${supportWorker.surname}")
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LabeledText(label: String, text: String) {
+    Text("$label: $text")
+    Spacer(modifier = Modifier.height(12.dp))
 }

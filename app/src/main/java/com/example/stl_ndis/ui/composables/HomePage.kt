@@ -45,7 +45,7 @@ fun HomePage(
     if (performLogout) {
         LaunchedEffect(Unit){
             homeViewModel.isLoggingOut.value = true
-//            homeViewModel.clearUserData()
+            homeViewModel.clearUserData()
             logout()
             navigateToLogin(true)
             homeViewModel.isLoggingOut.value = false
@@ -67,7 +67,7 @@ fun HomePage(
     ) {
         if (!homeViewModel.isLoggingOut.value) {
             Text(
-                text = "Hello ${firstName.ifBlank { "World" }}",
+                text = if (firstName.isNotBlank()) "Hello $firstName," else "Bye Bye!",
                 fontSize = 32.sp
             )
             Spacer(modifier = Modifier.height(16.dp))

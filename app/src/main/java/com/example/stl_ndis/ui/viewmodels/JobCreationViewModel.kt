@@ -41,6 +41,7 @@ class JobCreationViewModel @Inject constructor(
         // create domain object
         val newJob = NDISJob(
             userId = "temp",
+            jobId = "temp",
             startDate = dateOfJob,
             startTime = startTime,
             hours = approxHours.toIntOrNull() ?: 0,
@@ -51,7 +52,7 @@ class JobCreationViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            val isSuccess = repository.saveJobToRemoteDatabase(newJob)
+            val isSuccess = repository.saveJobToRemoteDatabase(newJob, supportWorkerAssigned)
 
             if (isSuccess){
                 saveJobStatus.value = SaveJobStatus.Success
