@@ -37,6 +37,7 @@ class JobCreationViewModel @Inject constructor(
 
     fun saveJob(){
         // update state of screen
+        saveJobStatus.value = SaveJobStatus.Loading
 
         // create domain object
         val newJob = NDISJob(

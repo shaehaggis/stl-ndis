@@ -4,4 +4,5 @@ sealed class SaveJobStatus {
     object Idle : SaveJobStatus()
     object Success : SaveJobStatus()
     object Failure : SaveJobStatus()
+    object Loading : SaveJobStatus()
 }

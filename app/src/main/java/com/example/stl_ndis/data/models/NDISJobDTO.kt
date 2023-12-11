@@ -39,3 +39,23 @@ data class NDISJobDTO(
     @SerialName("updated_at")
     val updatedAt: String? = null
 )
+
+fun NDISJobDTO.asDomainObject(): NDISJob? {
+    if (jobId == null || userId == null || startDate == null || startTime == null ||
+        hours == null || status == null || serviceCategory == null ||
+        description == null || pickupLocation == null) {
+        return null
+    }
+
+    return NDISJob(
+        jobId = jobId,
+        userId = userId,
+        startDate = startDate,
+        startTime = startTime,
+        hours = hours,
+        status = status,
+        serviceCategory = serviceCategory,
+        description = description,
+        pickupLocation = pickupLocation
+    )
+}
