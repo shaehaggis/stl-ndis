@@ -40,7 +40,7 @@ fun HomePage(
         mutableStateOf(false)
     }
 
-    val firstName = homeViewModel.firstName.value
+    val firstName = homeViewModel.firstName.collectAsState().value
 
     if (performLogout) {
         LaunchedEffect(Unit){

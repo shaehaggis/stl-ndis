@@ -2,11 +2,16 @@ package com.example.stl_ndis.data.helpers
 
 import com.example.stl_ndis.data.models.JobAssignmentDTO
 import com.example.stl_ndis.data.models.JobAssignmentInsertionDTO
+import com.example.stl_ndis.data.models.LoginCredentials
 import com.example.stl_ndis.data.models.NDISJob
 import com.example.stl_ndis.data.models.NDISJobDTO
+import com.example.stl_ndis.data.models.User
 import com.example.stl_ndis.data.models.UserAssignmentRequest
+import com.example.stl_ndis.data.models.UserDTO
+import com.example.stl_ndis.data.models.toDomain
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.gotrue.gotrue
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.rpc
@@ -21,6 +26,29 @@ class SupabaseClientWrapper @Inject constructor(
 
     private fun getUserID(): String? {
         return supabaseClient.gotrue.currentSessionOrNull()?.user?.id
+    }
+
+    suspend fun login(credentials: LoginCredentials) {
+        supabaseClient.gotrue.loginWith(Email) {
+            email = credentials.username
+            password = credentials.password
+        }
+    }
+
+    suspend fun getUserInfo(): User {
+
+        val userId = getUserID()
+
+        val response = supabaseClient.postgrest
+            .from("users")
+            .select {
+                if (userId != null) {
+                    eq("id", userId)
+                }
+            }
+            .decodeSingle<UserDTO>()
+
+        return response.toDomain()
     }
 
     suspend fun saveJob(ndisJob: NDISJob): NDISJobDTO {

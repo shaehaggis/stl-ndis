@@ -4,42 +4,23 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.example.stl_ndis.data.datastore.UserSettingsKeys
+import com.example.stl_ndis.data.helpers.SupabaseClientWrapper
 import com.example.stl_ndis.data.models.LoginCredentials
-import com.example.stl_ndis.data.models.UserDTO
-import com.example.stl_ndis.data.models.toDomain
-import io.github.jan.supabase.SupabaseClient
-import io.github.jan.supabase.gotrue.gotrue
-import io.github.jan.supabase.gotrue.providers.builtin.Email
-import io.github.jan.supabase.postgrest.postgrest
 import javax.inject.Inject
 
 class LoginRepository @Inject constructor(
-    private val supabaseClient: SupabaseClient,
+    private val supabaseClientWrapper: SupabaseClientWrapper,
     private val dataStore: DataStore<Preferences>
 ) {
 
     suspend fun authenticateWithSupabase(credentials: LoginCredentials): Boolean {
 
         return try {
-            supabaseClient.gotrue.loginWith(Email) {
-                email = credentials.username
-                password = credentials.password
-            }
+            supabaseClientWrapper.login(credentials)
 
-            val userId = supabaseClient.gotrue.currentSessionOrNull()?.user?.id
+            val userInfo = supabaseClientWrapper.getUserInfo()
 
-            val response = supabaseClient.postgrest
-                .from("users")
-                .select {
-                    if (userId != null) {
-                        eq("id", userId)
-                    }
-                }
-                .decodeSingle<UserDTO>()
-
-            val domainObject = response.toDomain()
-
-            saveUserInfoToDataStore(domainObject.firstName, domainObject.surname, domainObject.role)
+            saveUserInfoToDataStore(userInfo.firstName, userInfo.surname, userInfo.role)
 
             true
         } catch (e: Exception) {
