@@ -19,8 +19,6 @@ class ViewJobsViewModel @Inject constructor(
     val jobList: StateFlow<List<NDISJob>?> = _jobList.asStateFlow()
 
     init {
-        println("Running init for viewjobsviewmodel")
-
         viewModelScope.launch {
             repository.jobsFlowDomain.collect { jobs ->
                 jobs.let {

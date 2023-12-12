@@ -62,15 +62,18 @@ class SupabaseClientWrapper @Inject constructor(
         return result
     }
 
-    suspend fun addAssignmentsToJob(job: NDISJobDTO, supportWorkerID: String?) {
-        val newAssignmentDTO = JobAssignmentInsertionDTO(
-            supportWorkerID = supportWorkerID,
-            jobID = job.jobId
-        )
+    suspend fun addAssignmentsToJob(job: NDISJobDTO, supportWorkers: List<String>) {
+
+        val assignments = supportWorkers.map { supportWorkerID ->
+            JobAssignmentInsertionDTO(
+                supportWorkerID = supportWorkerID,
+                jobID = job.jobId
+            )
+        }
 
         supabaseClient.postgrest
             .from("assignments")
-            .insert(newAssignmentDTO)
+            .insert(assignments)
     }
 
     suspend fun getAllJobAssignments(): List<JobAssignmentDTO> {

@@ -1,6 +1,7 @@
 package com.example.stl_ndis.ui.viewmodels
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -23,7 +24,8 @@ class JobCreationViewModel @Inject constructor(
     var categoryOfService by mutableStateOf("")
     var pickupLocation by mutableStateOf("")
     var jobDescription by mutableStateOf("")
-    var supportWorkerAssigned by mutableStateOf("")
+
+    var supportWorkers = mutableStateListOf<String>()
 
     var saveJobStatus: MutableStateFlow<SaveJobStatus> = MutableStateFlow(SaveJobStatus.Idle)
 
@@ -33,6 +35,17 @@ class JobCreationViewModel @Inject constructor(
 
     fun setTime(hourOfDay: Int, minute: Int) {
         startTime = String.format("%02d:%02d", hourOfDay, minute)
+    }
+
+    fun addSupportWorker() {
+        println("HI")
+        supportWorkers.add("")
+    }
+
+    fun removeSupportWorker(index: Int){
+        if (index >= 0 && index < supportWorkers.size){
+            supportWorkers.removeAt(index)
+        }
     }
 
     fun saveJob(){
@@ -52,8 +65,12 @@ class JobCreationViewModel @Inject constructor(
             pickupLocation = pickupLocation
         )
 
+        supportWorkers.forEach { worker ->
+            println(worker)
+        }
+
         viewModelScope.launch {
-            val isSuccess = repository.saveJobToRemoteDatabase(newJob, supportWorkerAssigned)
+            val isSuccess = repository.saveJobToRemoteDatabase(newJob, supportWorkers)
 
             if (isSuccess){
                 saveJobStatus.value = SaveJobStatus.Success
@@ -63,7 +80,7 @@ class JobCreationViewModel @Inject constructor(
                 categoryOfService = ""
                 pickupLocation = ""
                 jobDescription = ""
-                supportWorkerAssigned = ""
+                supportWorkers.clear()
             }
             else {
                 saveJobStatus.value = SaveJobStatus.Failure

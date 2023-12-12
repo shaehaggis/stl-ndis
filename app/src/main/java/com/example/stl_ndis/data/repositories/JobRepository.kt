@@ -28,12 +28,12 @@ class JobRepository @Inject constructor(
         }
     }
 
-    suspend fun saveJobToRemoteDatabase(job: NDISJob, supportWorkerID: String?): Boolean {
+    suspend fun saveJobToRemoteDatabase(job: NDISJob, supportWorkers: List<String>): Boolean {
         return try {
             val response = supabaseClientWrapper.saveJob(job)
 
-            if (supportWorkerID != null) {
-                supabaseClientWrapper.addAssignmentsToJob(response, supportWorkerID)
+            if (supportWorkers.isNotEmpty()) {
+                supabaseClientWrapper.addAssignmentsToJob(response, supportWorkers)
             }
 
             updateJobsFlow()
