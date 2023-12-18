@@ -23,9 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,18 +38,13 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ViewJobs(
     navigateToHome: () -> Unit,
+    navigateToEdit: (NDISJob) -> Unit,
     viewJobsViewModel: ViewJobsViewModel
 ){
 
     val jobList by viewJobsViewModel.jobList.collectAsState(initial = listOf())
-
-    var showModal by remember {
-        mutableStateOf(false)
-    }
-
-    var jobToDisplay by remember {
-        mutableStateOf<NDISJob?>(null)
-    }
+    val showModal by viewJobsViewModel.showModal.collectAsState()
+    val jobToDisplay by viewJobsViewModel.jobToDisplay.collectAsState()
 
     Row(
         modifier = Modifier.fillMaxWidth()
@@ -101,18 +93,21 @@ fun ViewJobs(
                     JobRow(
                         job = job,
                         onButtonClick = { selectedJob ->
-                            jobToDisplay = selectedJob
-                            showModal = true
+                            viewJobsViewModel.setJobToDisplay(selectedJob)
+                            viewJobsViewModel.setShowModal(true)
                         })
                     Divider(color = Color.Gray, thickness = 0.5.dp)
                 }
             }
 
             if (showModal && jobToDisplay != null){
-                JobDetailsModal(job = jobToDisplay!!) {
-                    showModal = false
-                    jobToDisplay = null
-                }
+                JobDetailsModal(job = jobToDisplay!!, onDismiss = {
+                    viewJobsViewModel.setShowModal(false)
+                    viewJobsViewModel.setJobToDisplay(null)
+                }, onEdit = { job ->
+                    viewJobsViewModel.setShowModal(false)
+                    navigateToEdit(job)
+                })
             }
         }
     }
@@ -143,16 +138,28 @@ fun JobRow(
 }
 
 @Composable
-fun JobDetailsModal(job: NDISJob, onDismiss: () -> Unit) {
+fun JobDetailsModal(job: NDISJob, onDismiss: () -> Unit, onEdit: (NDISJob) -> Unit) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
-        confirmButton = { Button(onClick = { onDismiss() }) {
-            Text(text = "Close")
-        } },
+        confirmButton = { },
         title = { Text(text = "Job Details") },
         text = {
-            JobDetails(job = job)
-        }
+            Column {
+                JobDetails(job = job)
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Button(onClick = { onEdit(job) }) {
+                        Text(text = "Edit")
+                    }
+                    Button(onClick = { onDismiss() }) {
+                        Text(text = "Close")
+                    }
+                }
+            }
+        },
     )
 }
 

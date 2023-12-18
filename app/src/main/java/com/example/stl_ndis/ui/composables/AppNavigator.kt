@@ -3,6 +3,7 @@ package com.example.stl_ndis.ui.composables
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -12,6 +13,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.stl_ndis.ui.state.LoginState
+import com.example.stl_ndis.ui.viewmodels.EditJobViewModel
 import com.example.stl_ndis.ui.viewmodels.HomeViewModel
 import com.example.stl_ndis.ui.viewmodels.JobCreationViewModel
 import com.example.stl_ndis.ui.viewmodels.LoginViewModel
@@ -31,6 +33,7 @@ fun AppNavigator(
     val homeViewModel: HomeViewModel = hiltViewModel()
     val jobCreationViewModel: JobCreationViewModel = hiltViewModel()
     val viewJobsViewModel: ViewJobsViewModel = hiltViewModel()
+    val editJobViewModel: EditJobViewModel = hiltViewModel()
 
     NavHost(
         navController = navController,
@@ -82,7 +85,25 @@ fun AppNavigator(
             composable("view-jobs") {
                 ViewJobs(
                     navigateToHome = {navController.navigate("home")},
+                    navigateToEdit = { job ->
+                        editJobViewModel.setCurrentJob(job)
+                        navController.navigate("edit-job")
+                    },
                     viewJobsViewModel = viewJobsViewModel
+                )
+            }
+
+            composable("edit-job") {
+                EditJob(
+                    modifier = Modifier.fillMaxWidth(),
+                    navigateToHome =
+                    { showToast ->
+                        if (showToast) {
+                            homeViewModel.showToast()
+                        }
+                        navController.navigate("home")
+                    },
+                    editJobViewModel = editJobViewModel
                 )
             }
         }

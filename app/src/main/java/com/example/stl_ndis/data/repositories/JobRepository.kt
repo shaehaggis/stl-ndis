@@ -1,8 +1,10 @@
 package com.example.stl_ndis.data.repositories
 
+import android.util.Log
 import com.example.stl_ndis.data.helpers.SupabaseClientWrapper
 import com.example.stl_ndis.data.helpers.addAssignmentsToJobs
 import com.example.stl_ndis.data.helpers.createHashMap
+import com.example.stl_ndis.data.models.JobAssignmentInsertionDTO
 import com.example.stl_ndis.data.models.NDISJob
 import com.example.stl_ndis.data.models.asDomainObject
 import kotlinx.coroutines.CoroutineScope
@@ -43,6 +45,29 @@ class JobRepository @Inject constructor(
             println(e)
             false
         }
+    }
+
+    suspend fun updateExistingJob(job: NDISJob){
+        try {
+            supabaseClientWrapper.updateJob(job)
+            updateJobsFlow()
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Failed to update job: ${e.message}")
+        }
+    }
+
+    suspend fun updateAssignmentsForExistingJob(jobID: String, idsToAdd: List<String>, idsToRemove: List<String>){
+        val assignmentsToAdd = idsToAdd.map { supportWorkerID ->
+            JobAssignmentInsertionDTO(
+                supportWorkerID = supportWorkerID,
+                jobID = jobID
+            )
+        }
+
+        try {
+            supabaseClientWrapper.updateAssignmentsForExistingJob(jobID, assignmentsToAdd, idsToRemove)
+        } catch (e: Exception) {
+            Log.e("JobRepository", "Failed to update assignments: ${e.message}")        }
     }
 
     private suspend fun updateJobsFlow() {

@@ -38,7 +38,6 @@ class JobCreationViewModel @Inject constructor(
     }
 
     fun addSupportWorker() {
-        println("HI")
         supportWorkers.add("")
     }
 

@@ -55,7 +55,7 @@ fun addAssignmentsToJobs(
 
 fun convertDomainToDto(job: NDISJob, userID: String?): NDISJobDTO {
     return NDISJobDTO(
-        userId = userID,
+        userId = userID ?: job.userId,
         startDate = job.startDate,
         startTime = job.startTime,
         hours = job.hours,

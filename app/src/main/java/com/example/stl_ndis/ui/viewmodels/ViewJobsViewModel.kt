@@ -18,6 +18,12 @@ class ViewJobsViewModel @Inject constructor(
     private val _jobList = MutableStateFlow<List<NDISJob>?>(listOf())
     val jobList: StateFlow<List<NDISJob>?> = _jobList.asStateFlow()
 
+    private val _showModal = MutableStateFlow(false)
+    val showModal: StateFlow<Boolean> = _showModal.asStateFlow()
+
+    private val _jobToDisplay = MutableStateFlow<NDISJob?>(null)
+    val jobToDisplay: StateFlow<NDISJob?> = _jobToDisplay.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.jobsFlowDomain.collect { jobs ->
@@ -26,5 +32,13 @@ class ViewJobsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun setShowModal(result: Boolean) {
+        _showModal.value = result
+    }
+
+    fun setJobToDisplay(job: NDISJob?) {
+        _jobToDisplay.value = job
     }
 }

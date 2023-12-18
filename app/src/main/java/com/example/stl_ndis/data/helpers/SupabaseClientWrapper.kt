@@ -1,5 +1,6 @@
 package com.example.stl_ndis.data.helpers
 
+import android.util.Log
 import com.example.stl_ndis.data.models.JobAssignmentDTO
 import com.example.stl_ndis.data.models.JobAssignmentInsertionDTO
 import com.example.stl_ndis.data.models.LoginCredentials
@@ -62,6 +63,29 @@ class SupabaseClientWrapper @Inject constructor(
         return result
     }
 
+    suspend fun updateJob(ndisJob: NDISJob) {
+        try {
+            supabaseClient.postgrest
+                .from("jobs")
+                .update(
+                    {
+                        set("startdate", ndisJob.startDate)
+                        set("starttime", ndisJob.startTime)
+                        set("hours", ndisJob.hours)
+                        set("servicecategory", ndisJob.serviceCategory)
+                        set("description", ndisJob.description)
+                        set("pickuplocation", ndisJob.pickupLocation)
+                    }
+                ) {
+                    eq("jobid", ndisJob.jobId)
+                }
+        }
+        catch (e: Exception) {
+            Log.e("SupabaseClientWrapper", "Error updating job in database: ${e.message}")
+        }
+
+    }
+
     suspend fun addAssignmentsToJob(job: NDISJobDTO, supportWorkers: List<String>) {
 
         val assignments = supportWorkers.map { supportWorkerID ->
@@ -74,6 +98,26 @@ class SupabaseClientWrapper @Inject constructor(
         supabaseClient.postgrest
             .from("assignments")
             .insert(assignments)
+    }
+
+    suspend fun updateAssignmentsForExistingJob(jobID: String, assignmentsToAdd:  List<JobAssignmentInsertionDTO>, idsToRemove: List<String>){
+        try {
+            supabaseClient.postgrest
+                .from("assignments")
+                .delete {
+                    and {
+                        eq("jobid", jobID)
+                        isIn("support_worker_id", idsToRemove)
+                    }
+                }
+
+            supabaseClient.postgrest
+                .from("assignments")
+                .insert(assignmentsToAdd)
+        }
+        catch (e: Exception) {
+            Log.e("SupabaseClientWrapper", "Error updating assignments in database: ${e.message}")
+        }
     }
 
     suspend fun getAllJobAssignments(): List<JobAssignmentDTO> {
